@@ -1,0 +1,10 @@
+#root {
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  /* background-color: alicebluex; */
+}
+
+tr {
+  border: 1px solid white;
+}
