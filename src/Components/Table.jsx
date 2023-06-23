@@ -2,35 +2,54 @@ import React, { useEffect, useState } from "react";
 import { snacks } from "../db/snacks";
 
 const Table = () => {
+  const initToggleSortOrder = Object.keys(snacks[0]).reduce((acc, curr) => {
+    return { ...acc, [curr]: false };
+  }, {});
+
+  const [sortedSnacks, setSortedSnacks] = useState(snacks);
   const [filteredSnacks, setFilteredSnacks] = useState(snacks);
   const [inputValue, setInputValue] = useState("");
+  const [toggleSortOrder, setToggleSortOrder] = useState(initToggleSortOrder);
 
   const handleSearchSnack = (e) => {
     setInputValue(e.target.value);
-    const newFilteredSnacks = snacks.filter(
+  };
+
+  useEffect(() => {
+    const newFilteredSnacks = sortedSnacks.filter(
       (item) =>
         item.product_name.includes(inputValue) ||
         String(item.ingredients).includes(inputValue)
     );
     if (inputValue.length === 0) {
-      setFilteredSnacks(snacks);
+      setFilteredSnacks(sortedSnacks);
     } else {
       setFilteredSnacks(newFilteredSnacks);
     }
-  };
+  }, [inputValue, sortedSnacks]);
 
   const handleSortSnacks = (key, type = "string") => {
-    console.log(key, type);
     if (type === "string") {
-      const sortedSnacks = snacks.sort((s1, s2) =>
-        s1[key] > s2[key] ? 1 : s1[key] < s2[key] ? -1 : 0
-      );
-      console.log(sortedSnacks);
-      setFilteredSnacks(sortedSnacks);
+      let sortedSnacks;
+      if (toggleSortOrder[key]) {
+        sortedSnacks = snacks.sort((a, b) => (a[key] > b[key] ? 1 : -1));
+        console.log(sortedSnacks);
+      } else {
+        sortedSnacks = snacks.sort((a, b) => (a[key] > b[key] ? -1 : 1));
+      }
+      setSortedSnacks([...sortedSnacks]);
+    } else if (type === "number") {
+      let sortedSnacks;
+      if (toggleSortOrder[key]) {
+        sortedSnacks = snacks.sort((a, b) => (a[key] > b[key] ? 1 : -1));
+        console.log(sortedSnacks);
+      } else {
+        sortedSnacks = snacks.sort((a, b) => (a[key] > b[key] ? -1 : 1));
+      }
+      setSortedSnacks([...sortedSnacks]);
     }
+    setToggleSortOrder({ ...toggleSortOrder, [key]: !toggleSortOrder[key] });
   };
-
-  console.log(filteredSnacks);
 
   return (
     <div>
@@ -44,17 +63,22 @@ const Table = () => {
       </div>
       <table>
         <tr>
-          <td>ID</td>
-          <td>
-            Product Name{" "}
-            <button onClick={() => handleSortSnacks("product_name", "string")}>
-              Click
-            </button>
+          <td onClick={() => handleSortSnacks("id", "number")}>ID</td>
+          <td onClick={() => handleSortSnacks("product_name", "string")}>
+            Product Name
           </td>
-          <td>Product Weight</td>
-          <td>Price (INR)</td>
-          <td>Calories</td>
-          <td>Ingredients</td>
+          <td onClick={() => handleSortSnacks("product_weight", "number")}>
+            Product Weight
+          </td>
+          <td onClick={() => handleSortSnacks("price", "number")}>
+            Price (INR)
+          </td>
+          <td onClick={() => handleSortSnacks("calories", "number")}>
+            Calories
+          </td>
+          <td onClick={() => handleSortSnacks("ingredients", "string")}>
+            Ingredients
+          </td>
         </tr>
         {filteredSnacks.map((snack) => (
           <tr>

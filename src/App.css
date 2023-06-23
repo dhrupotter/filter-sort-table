@@ -5,6 +5,7 @@
   /* background-color: alicebluex; */
 }
 
-tr {
+td {
   border: 1px solid white;
+  border-spacing: 0;
 }
